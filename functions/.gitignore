@@ -1,0 +1,4 @@
+node_modules/
+*.local
+./web_api/.env
+./web_api/private
