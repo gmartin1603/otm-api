@@ -9,31 +9,46 @@
 const { handlePromise, handleResponse } = require("./common-service");
 // Firestore helpers (if needed)
 // const { getAuth } = require("firebase-admin/auth");
-// const { db, admin } = require("../helpers/firebase");
+const { db, admin } = require("../helpers/firebase");
+
+const { getConnection } = require("../helpers/mongo");
+
+// Lazy initialization of MongoDB connection
+// let mongoDb;
+// const getMongoDb = () => {
+//   if (!mongoDb) {
+//     mongoDb = getConnection();
+//   }
+//   return mongoDb;
+// };
 
 const devAppService = {
-  // Add service methods here
-  // Example:
-  devAppEx: async (req, res) => {
-    console.log("devAppEx fired");
-    const body = req.body;
-    // console.log("Req body: ", body);
-    const id = body.id;
+  backUpToMongo: async (body) => {
+    //Get all department docs from Firestore
+    const get_example_api = () => db.collection(body.dept).get();
+    const [data, error] = await handlePromise(get_example_api);
+    console.log("Firebase data: ", data.docs.length);
+    let firebaseDocs = data.docs.map((doc) => doc.data());
 
-    if (!id) {
-      throw new Error("No ID provided");
+    if (error) {
+      throw error;
+    } else {
+      if (firebaseDocs.length === 0) {
+        throw new Error("Target Collection Empty");
+      }
+      
+      try {
+        const mdb = getConnection();
+        const collection = mdb.collection(body.dept);
+        const result = await collection.insertMany(firebaseDocs);
+        console.log(result.insertedCount, "docs inserted");
+        return `Successfully copied ${result.insertedCount} docs`;
+      } catch (err) {
+        console.error("Error writing to MongoDb: ", err);
+        throw err;
+      }
+        
     }
-  
-    // const get_example_api = () => ** API CALL HERE **;
-    // const [data, error] = await handlePromise(get_example_api);
-  
-    // if (error) {
-    //   throw new Error(error);
-    // } else {
-    //   return data;
-    // }
-    
-    return "Example data"
   },
 };
 

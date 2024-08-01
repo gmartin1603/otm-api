@@ -67,3 +67,5 @@ node_modules/
 functions/web_api/private
 functions/yarn.lock
 functions/package-lock.json
+package-lock.json
+yarn.lock

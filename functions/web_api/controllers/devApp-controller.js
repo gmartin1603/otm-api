@@ -14,20 +14,19 @@ const devAppController = async (req, res) => {
   // Get the devAppService method name from the last route of the request URL
   const method = req.url.split("/").pop();
 
-  const devApp_controller_api = () => devAppService[method](req, res);
+  const devApp_controller_api = () => devAppService[method](req.body);
   const [result, error] = await handlePromise(devApp_controller_api);
   let response = {};
 
   if (error) {
     // console.error("Error calling devAppService method:", error);
     response = { error: error, controller: "devApp-controller", method: method };
-
     handleResponse(res, "error", response);
   } else {
     console.log("Successfully called devAppService method:", method);
     response = {
       status: "success",
-      message: "Successfully called devAppService method",
+      message: "Successfully called devAppService",
       data: result,
       method: `devApp-controller => ${method}`
     };

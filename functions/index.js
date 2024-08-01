@@ -12,6 +12,7 @@ const API_VERSION = require("./package.json").version;
 const { writeLog } = require("./web_api/services/common-service");
 
 // **SCRIPT** CONTROLLER IMPORT START
+const postingsController = require("./web_api/controllers/postings-controller");
 const jobsController = require("./web_api/controllers/jobs-controller");
 const userController = require("./web_api/controllers/user-controller");
 const appController = require("./web_api/controllers/app-controller");
@@ -31,23 +32,41 @@ if (process.env.NODE_ENV == "prod") {
 // console.log("env: ", env)
 console.log("env: ", env);
 
+// Mongo Connection
+const { connectToMongoDB } = require("./web_api/helpers/mongo");
+
 const corsHandler = cors({ origin: true });
 
 const applyMiddleware = (handler) => (req, res) => {
 	return corsHandler(req, res, (_) => {
-		return bodyParser.json()(req, res, async () => {
-			const method = req.url.split("/").pop();
-			await writeLog("activity", {
-				message: `API call made to method: ${method}`,
-				headers: req.headers,
-				body: req.body,
+    console.log("CORS Handler added");
+		return bodyParser.json()(req, res, () => {
+      console.log("Adding MongoDB Middleware");
+			connectToMongoDB((error) => {
+				if (error) {
+					console.error("Failed to connect to MongoDB", error);
+					// return res.status(500).json({ error: "Failed to connect to MongoDB" });
+				}
+				const method = req.url.split("/").pop();
+				writeLog("activity", {
+					message: `API call made to method: ${method}`,
+					headers: req.headers,
+					body: req.body,
+				}).then(() => {
+					return handler(req, res);
+				});
 			});
-			return handler(req, res);
 		});
 	});
 };
 
 // **SCRIPT** CONTROLLER ROUTING START
+
+  const postings = express();
+  postings.post("*", (req, res) => postingsController(req, res));
+
+  exports.postings = functions.https.onRequest(applyMiddleware(postings));
+  
 
 const app = express();
 app.post("*", (req, res) => appController(req, res));
