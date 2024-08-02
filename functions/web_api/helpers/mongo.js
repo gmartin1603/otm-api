@@ -2,8 +2,9 @@ const { MongoClient } = require('mongodb');
 
 let connection;
 
-// const connectionString = "mongodb://localhost:27017/OTM-Backup";
-const connectionString = "mongodb://127.0.0.1:27017/OTM-Backup";
+// const connectionString = "mongodb://localhost:27017/OTM-Backup-Staging";
+const connectionString = "mongodb://127.0.0.1:27017/OTM-Backup-Staging";
+// const connectionString = "mongodb://127.0.0.1:27017/OTM-Backup";
 
 module.exports = {
     connectToMongoDB: (cb) => {

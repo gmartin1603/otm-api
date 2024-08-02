@@ -14,7 +14,7 @@ const postingsController = async (req, res) => {
   // Get the postingsService method name from the last route of the request URL
   const method = req.url.split("/").pop();
 
-  const postings_controller_api = () => postingsService[method](req, res);
+  const postings_controller_api = () => postingsService[method](req.body);
   const [result, error] = await handlePromise(postings_controller_api);
   let response = {};
 

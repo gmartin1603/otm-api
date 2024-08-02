@@ -10,15 +10,11 @@ const { handlePromise, handleResponse } = require("./common-service");
 // Firestore helpers (if needed)
 // const { getAuth } = require("firebase-admin/auth");
 const { db, admin } = require("../helpers/firebase");
+const jobsService = require("./jobs-service");
 
 const postingsService = {
-  // Add service methods here
-  // Example:
-  getPost: async (req) => {
-    console.log("postingsEx fired");
-    const body = req.body;
-    // console.log("Req body: ", body);
-    const id = body.id;
+  getPost: async (body) => {
+    const {id} = body;
 
     if (!id) {
       throw new Error("No ID provided");
@@ -105,6 +101,89 @@ const postingsService = {
       throw new Error(error);
     } else {
       return true;
+    }
+  },
+
+  deletePost: async (body) => {
+    const {postId, dept, archive} = body;
+    
+    if (postId === "" || postId === undefined) {
+      throw new Error("No post ID provided")
+    } else if (dept === "" || dept === undefined) {
+      throw new Error("No department provided")
+    } else if (archive === "" || archive === undefined) {
+      throw new Error("No archive provided")
+    }
+
+    const post = await postingsService.getPost({id: postId});
+    const pos = await jobsService.getJob({id: post.pos, dept: dept});
+
+    const misc = pos.group === "misc";
+
+    // await db
+    // .collection(`${dept}-posts`)
+    // .doc(postId).delete()
+    // .then(() => {
+    //   console.log(`${postId} Deleted!`)
+    // })
+    // .catch((error) => {
+    //   throw new Error(error)
+    // })
+    if (misc) {
+      let obj = {}
+      
+      const get_archive_doc_api = () => db
+      .collection(dept)
+      .doc('rota')
+      .collection('archive')
+      .doc(archive)
+      .get()
+
+      const [get_archive, get_error] = await handlePromise(get_archive_doc_api);
+
+      if (get_error) {
+        throw new Error(`Error getting Archive doc: ${archive}`)
+      } else if (get_archive.data()) {
+        // Update Archive Doc
+        obj = new Object(get_archive.data())
+        obj[body.shift].rows.map((row) => {
+          if (row.id === pos) {
+            let active = false
+            for (const key in row) {
+              if (Number.isInteger(parseInt(key))) {
+                if (row[key] === postId) {
+                  console.log("Remove", postId)
+                  row[key] = ""
+                } else if (row[key].length > 0) {
+                  active = true
+                }
+              }
+            }
+            if (!active) {
+              console.log("Deleting Row", row.id)
+              obj[shift].rows = obj[shift].rows.filter((row) => row.id !== pos)
+            }
+          }
+        })
+        // Save Update
+        await db
+        .collection(dept)
+        .doc('rota')
+        .collection('archive')
+        .doc(archive)
+        .set(obj)
+        .then(() => {
+          console.log(`${archive} Updated!`)
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+        return {message: "Operation Complete, archive updated"}
+      } else {
+        return {message: "No Archive Document Found"}
+      }
+    } else {
+      return {message: "Operation Complete, no archive update"}
     }
   }
 };

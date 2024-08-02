@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "otm-staging-725a6"
+    "default": "otm-staging-725a6",
+    "staging": "otm-staging-725a6",
+    "production": "overtime-management-83008"
   }
 }
