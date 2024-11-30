@@ -147,7 +147,7 @@ const postingsService = {
         // Update Archive Doc
         obj = new Object(get_archive.data())
         obj[body.shift].rows.map((row) => {
-          if (row.id === pos) {
+          if (row.id === pos.id) {
             let active = false
             for (const key in row) {
               if (Number.isInteger(parseInt(key))) {
@@ -161,7 +161,7 @@ const postingsService = {
             }
             if (!active) {
               console.log("Deleting Row", row.id)
-              obj[shift].rows = obj[shift].rows.filter((row) => row.id !== pos)
+              obj[shift].rows = obj[shift].rows.filter((row) => row.id !== pos.id)
             }
           }
         })
