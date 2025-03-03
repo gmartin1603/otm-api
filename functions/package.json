@@ -5,7 +5,7 @@
   "scripts": {
     "use-stage": "firebase use staging",
     "use-prod": "firebase use production",
-    "serve": "firebase emulators:start --only functions",
+    "serve": "firebase serve --only functions",
     "shell": "firebase functions:shell",
     "start": "npm run serve",
     "deploy": "firebase deploy --only functions",
