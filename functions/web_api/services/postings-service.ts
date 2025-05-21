@@ -188,4 +188,4 @@ const postingsService = {
   }
 };
 
-module.exports = postingsService;
+export default postingsService;

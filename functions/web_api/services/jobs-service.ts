@@ -6,10 +6,10 @@
  * @description jobs-service is called by and returns to jobs-controller
  * @exports jobsService
  */
-const { handlePromise } = require("./common-service");
+import { handlePromise } from "./common-service";
 // Firestore helpers (if needed)
 // const { getAuth } = require("firebase-admin/auth");
-const { db } = require("../helpers/firebase");
+import { db } from "../helpers/firebase";
 
 const jobsService = {
   getJobs: async (req) => {
@@ -151,4 +151,4 @@ const jobsService = {
   }
 };
 
-module.exports = jobsService;
+export default jobsService;

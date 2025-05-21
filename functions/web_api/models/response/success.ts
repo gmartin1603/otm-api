@@ -1,4 +1,4 @@
-const Joi = require('joi');
+import Joi from 'joi';
 
 class Success {
   constructor(obj) {
@@ -25,4 +25,4 @@ class Success {
   }
 }
 
-module.exports = Success;
+export default Success;

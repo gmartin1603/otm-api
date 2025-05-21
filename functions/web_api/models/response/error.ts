@@ -1,4 +1,4 @@
-const Joi = require('joi');
+import Joi from 'joi';
 
 class ErrorRes {
   constructor({error, method, controller}) {
@@ -50,4 +50,4 @@ class ErrorRes {
   }
 }
 
-module.exports = ErrorRes;
+export default ErrorRes;

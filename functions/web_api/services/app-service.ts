@@ -21,4 +21,4 @@ const appService = {
   
 };
 
-module.exports = appService;
+export default appService;

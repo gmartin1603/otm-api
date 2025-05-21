@@ -164,4 +164,4 @@ const devAppService = {
   },
 };
 
-module.exports = devAppService;
+export default devAppService;

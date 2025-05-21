@@ -7,10 +7,10 @@
  * @description app-controller handles execution of /app endpoints by calling the appropriate service method
  * @exports appController
  */
-const appService = require("../services/app-service");
-const { handlePromise, handleResponse } = require("../services/common-service");
+import appService from "../services/app-service";
+import { handlePromise, handleResponse } from "../services/common-service";
 
-const appController = async (req, res) => {
+const appController = async (req: any, res: any) => {
   // Get the appService method name from the last route of the request URL
   const method = req.url.split("/").pop();
 
@@ -37,4 +37,4 @@ const appController = async (req, res) => {
 
 };
 
-module.exports = appController;
+export default appController;
