@@ -1,3 +1,6 @@
+import jobsService from "../services/jobs-service";
+import { handlePromise, handleResponse } from "../services/common-service";
+
 /**
   * Controller for the jobs cloud function
   * @module jobs-controller
@@ -7,10 +10,8 @@
   * @description jobs-controller handles execution of /jobs endpoints by calling the appropriate service method
   * @exports jobsController
   */
-const jobsService = require("../services/jobs-service");
-const { handlePromise, handleResponse } = require("../services/common-service");
 
-const jobsController = async (req, res) => {
+const jobsController = async (req: any, res: any) => {
   // Get the jobsService method name from the last route of the request URL
   const method = req.url.split("/").pop();
 
@@ -37,4 +38,4 @@ const jobsController = async (req, res) => {
 
 };
 
-module.exports = jobsController;
+export default jobsController;

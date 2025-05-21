@@ -7,10 +7,10 @@
   * @description postings-controller handles execution of /postings endpoints by calling the appropriate service method
   * @exports postingsController
   */
-const postingsService = require("../services/postings-service");
-const { handlePromise, handleResponse } = require("../services/common-service");
+import postingsService from "../services/postings-service";
+import { handlePromise, handleResponse } from "../services/common-service";
 
-const postingsController = async (req, res) => {
+const postingsController = async (req: any, res: any) => {
   // Get the postingsService method name from the last route of the request URL
   const method = req.url.split("/").pop();
 
@@ -37,4 +37,4 @@ const postingsController = async (req, res) => {
 
 };
 
-module.exports = postingsController;
+export default postingsController;

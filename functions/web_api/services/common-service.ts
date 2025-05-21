@@ -1,8 +1,8 @@
-const Success = require('../models/response/success');
-const ErrorRes = require('../models/response/error');
-const { db } = require('../helpers/firebase');
+import Success from '../models/response/success';
+import ErrorRes from '../models/response/error';
+import { db } from '../helpers/firebase';
 
-const commonService = {
+export const commonService = {
   handlePromise: async (promise) => {
     try {
       const result = await promise();
@@ -101,4 +101,4 @@ const commonService = {
 
 }
 
-module.exports = commonService;
+export const { handlePromise, validateModel, handleResponse, handleSuccess, handleError, writeLog } = commonService;

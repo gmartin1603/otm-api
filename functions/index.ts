@@ -1,43 +1,38 @@
-/**
- * @file index.js is the root file for this project.
- * It is the first file that runs when you start your server.
- * Leave comments that start with "**SCRIPT**" in place so that the project scripts can inject code in the correct places.
- *
- */
-const functions = require("firebase-functions");
-const express = require("express");
-const cors = require("cors");
-const bodyParser = require("body-parser");
-const API_VERSION = require("./package.json").version;
-const { writeLog } = require("./web_api/services/common-service");
+import functions from "firebase-functions";
+import express from "express";
+import cors from "cors";
+import bodyParser from "body-parser";
+import pkg from "./package.json";
+import { writeLog } from "./web_api/services/common-service";
 
 // **SCRIPT** CONTROLLER IMPORT START
-const postingsController = require("./web_api/controllers/postings-controller");
-const jobsController = require("./web_api/controllers/jobs-controller");
-const userController = require("./web_api/controllers/user-controller");
-const appController = require("./web_api/controllers/app-controller");
-const devAppController = require("./web_api/controllers/devApp-controller");
+import postingsController from "./web_api/controllers/postings-controller";
+import jobsController from "./web_api/controllers/jobs-controller";
+import userController from "./web_api/controllers/user-controller";
+import appController from "./web_api/controllers/app-controller";
+import devAppController from "./web_api/controllers/devApp-controller";
 // **SCRIPT** CONTROLLER IMPORT END
 
-require("dotenv").config();
+import dotenv from "dotenv";
+dotenv.config();
 
 let env = "";
-let corsOrigin = "*";
+let corsOrigin: string = "*";
 if (process.env.NODE_ENV == "prod") {
-	env = "prod";
-	corsOrigin = process.env.NODE_ENV_CORS_URL;
+  env = "prod";
+  corsOrigin = process.env.NODE_ENV_CORS_URL || "*";
 } else {
-	env = "dev";
+  env = "dev";
 }
 // console.log("env: ", env)
 console.log("env: ", env);
 
 // Mongo Connection
-const { connectToMongoDB } = require("./web_api/helpers/mongo");
+import { connectToMongoDB } from "./web_api/helpers/mongo";
 
 const corsHandler = cors({ origin: true });
 
-const applyMiddleware = (handler) => (req, res) => {
+const applyMiddleware = (handler: (req: any, res: any) => any) => (req: any, res: any) => {
 	return corsHandler(req, res, (_) => {
     console.log("CORS Handler added");
 		return bodyParser.json()(req, res, () => {
@@ -62,31 +57,25 @@ const applyMiddleware = (handler) => (req, res) => {
 
 // **SCRIPT** CONTROLLER ROUTING START
 
-  const postings = express();
-  postings.post("*", (req, res) => postingsController(req, res));
+const postingsApp = express();
+postingsApp.post("*", (req, res) => postingsController(req, res));
+export const postings = functions.https.onRequest(applyMiddleware(postingsApp));
 
-  exports.postings = functions.https.onRequest(applyMiddleware(postings));
-  
+const mainApp = express();
+mainApp.post("*", (req, res) => appController(req, res));
+export const app = functions.https.onRequest(applyMiddleware(mainApp));
 
-const app = express();
-app.post("*", (req, res) => appController(req, res));
+const jobsApp = express();
+jobsApp.post("*", (req, res) => jobsController(req, res));
+export const jobs = functions.https.onRequest(applyMiddleware(jobsApp));
 
-exports.app = functions.https.onRequest(applyMiddleware(app));
+const userApp = express();
+userApp.post("*", (req, res) => userController(req, res));
+export const user = functions.https.onRequest(applyMiddleware(userApp));
 
-const jobs = express();
-jobs.post("*", (req, res) => jobsController(req, res));
-
-exports.jobs = functions.https.onRequest(applyMiddleware(jobs));
-
-const user = express();
-user.post("*", (req, res) => userController(req, res));
-
-exports.user = functions.https.onRequest(applyMiddleware(user));
-
-const devApp = express();
-devApp.post("*", (req, res) => devAppController(req, res));
-
-exports.devApp = functions.https.onRequest(applyMiddleware(devApp));
+const devAppExpress = express();
+devAppExpress.post("*", (req, res) => devAppController(req, res));
+export const devApp = functions.https.onRequest(applyMiddleware(devAppExpress));
 
 // **SCRIPT** CONTROLLER ROUTING END
 

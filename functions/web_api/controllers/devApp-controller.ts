@@ -7,10 +7,10 @@
   * @description devApp-controller handles execution of /devApp endpoints by calling the appropriate service method
   * @exports devAppController
   */
-const devAppService = require("../services/devApp-service");
-const { handlePromise, handleResponse } = require("../services/common-service");
+import devAppService from "../services/devApp-service";
+import { handlePromise, handleResponse } from "../services/common-service";
 
-const devAppController = async (req, res) => {
+const devAppController = async (req: any, res: any) => {
   // Get the devAppService method name from the last route of the request URL
   const method = req.url.split("/").pop();
 
@@ -36,4 +36,4 @@ const devAppController = async (req, res) => {
 
 };
 
-module.exports = devAppController;
+export default devAppController;

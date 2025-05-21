@@ -7,10 +7,10 @@
   * @description user-controller handles execution of /user endpoints by calling the appropriate service method
   * @exports userController
   */
-const userService = require("../services/user-service");
-const { handlePromise, handleResponse } = require("../services/common-service");
+import userService from "../services/user-service";
+import { handlePromise, handleResponse } from "../services/common-service";
 
-const userController = async (req, res) => {
+const userController = async (req: any, res: any) => {
   // Get the userService method name from the last route of the request URL
   const method = req.url.split("/").pop();
 
@@ -37,4 +37,4 @@ const userController = async (req, res) => {
 
 };
 
-module.exports = userController;
+export default userController;
