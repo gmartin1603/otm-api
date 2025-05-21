@@ -3,19 +3,24 @@
   "version": "5.0.0",
   "description": "Cloud Functions for Firebase",
   "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "prebuild": "npm run clean",
+    "preserve": "npm run build",
+    "serve": "firebase serve --only functions",
+    "dev": "npm run build && firebase serve --only functions",
+    "predeploy": "npm run build",
+    "deploy": "firebase deploy --only functions",
     "use-stage": "firebase use staging",
     "use-prod": "firebase use production",
-    "serve": "firebase serve --only functions",
     "shell": "firebase functions:shell",
-    "dev": "npm run serve",
-    "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
     "add-controller": "node ./scripts/add-controller.js"
   },
   "engines": {
     "node": "22"
   },
-  "main": "index.ts",
+  "main": "dist/index.js",
   "dependencies": {
     "dotenv": "^16.4.5",
     "firebase-admin": "^12.7.0",
