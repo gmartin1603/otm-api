@@ -1,0 +1,36 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		}
+	],
+	"settings": {
+		"explorer.fileNesting.enabled": true,
+		"explorer.fileNesting.patterns": {
+			"tsconfig.json": "tsconfig.*.json, env.d.ts",
+			"vite.config.*": "jsconfig*, vitest.config.*, cypress.config.*, playwright.config.*",
+			"package.json": "package-lock.json, *.lock, pnpm*, .yarnrc*, yarn*, .eslint*, eslint*, .prettier*, prettier*, .editorconfig"
+		},
+		"typescript.suggest.autoImports": true,
+		"workbench.iconTheme": "vscode-icons",
+		"window.zoomLevel": 0.5,
+		"editor.fontSize": 14,
+		"cSpell.words": ["depts"]
+	},
+	"extensions": {
+		"recommendations": [
+			"wayou.vscode-todo-highlight",
+			"streetsidesoftware.code-spell-checker",
+			"aaron-bond.better-comments"
+		]
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			
+		],
+		"compounds": [
+			
+		]
+	}
+}

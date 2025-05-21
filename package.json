@@ -1,4 +1,15 @@
 {
+  "name": "otm-api",
+  "version": "5.0.0",
+  "description": "OTM API Parent Project",
+  "scripts": {
+    "dev": "npm --prefix ./functions run serve",
+    "add-controller": "node ./functions/scripts/add-controller.js",
+    "use-stage": "firebase use staging",
+    "use-prod": "firebase use production",
+    "install": "npm --prefix ./functions install"
+  },
+  "private": true,
   "devDependencies": {
     "@types/node": "^22.15.21",
     "@typescript-eslint/eslint-plugin": "^8.32.1",
