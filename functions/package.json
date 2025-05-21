@@ -4,7 +4,7 @@
   "description": "Cloud Functions for Firebase",
   "scripts": {
     "build": "tsc",
-    "clean": "rm -rf dist",
+    "clean": "rimraf dist",
     "prebuild": "npm run clean",
     "preserve": "npm run build",
     "serve": "firebase serve --only functions",
@@ -29,6 +29,7 @@
     "mongodb": "6.7"
   },
   "devDependencies": {
+    "rimraf": "^5.0.5",
     "@tsconfig/node-lts": "^22.0.1",
     "firebase-functions-test": "^3.1.0"
   },
