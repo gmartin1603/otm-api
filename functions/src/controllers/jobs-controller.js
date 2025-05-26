@@ -11,7 +11,7 @@ import { handlePromise, handleResponse } from "../services/common-service";
   * @exports jobsController
   */
 
-const jobsController = async (req: any, res: any) => {
+const jobsController = async (req, res) => {
   // Get the jobsService method name from the last route of the request URL
   const method = req.url.split("/").pop();
 

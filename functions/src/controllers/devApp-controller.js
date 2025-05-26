@@ -10,7 +10,7 @@
 import devAppService from "../services/devApp-service";
 import { handlePromise, handleResponse } from "../services/common-service";
 
-const devAppController = async (req: any, res: any) => {
+const devAppController = async (req, res) => {
   // Get the devAppService method name from the last route of the request URL
   const method = req.url.split("/").pop();
 

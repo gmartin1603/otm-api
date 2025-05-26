@@ -2,22 +2,21 @@ import functions from "firebase-functions";
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
-import pkg from "./package.json";
-import { writeLog } from "./web_api/services/common-service";
+import { writeLog } from "./services/common-service";
 
 // **SCRIPT** CONTROLLER IMPORT START
-import postingsController from "./web_api/controllers/postings-controller";
-import jobsController from "./web_api/controllers/jobs-controller";
-import userController from "./web_api/controllers/user-controller";
-import appController from "./web_api/controllers/app-controller";
-import devAppController from "./web_api/controllers/devApp-controller";
+import postingsController from "./controllers/postings-controller";
+import jobsController from "./controllers/jobs-controller";
+import userController from "./controllers/user-controller";
+import appController from "./controllers/app-controller";
+import devAppController from "./controllers/devApp-controller";
 // **SCRIPT** CONTROLLER IMPORT END
 
 import dotenv from "dotenv";
 dotenv.config();
 
 let env = "";
-let corsOrigin: string = "*";
+let corsOrigin = "*";
 if (process.env.NODE_ENV == "prod") {
   env = "prod";
   corsOrigin = process.env.NODE_ENV_CORS_URL || "*";
@@ -28,11 +27,11 @@ if (process.env.NODE_ENV == "prod") {
 console.log("env: ", env);
 
 // Mongo Connection
-import { connectToMongoDB } from "./web_api/helpers/mongo";
+import { connectToMongoDB } from "./helpers/mongo";
 
 const corsHandler = cors({ origin: true });
 
-const applyMiddleware = (handler: (req: any, res: any) => any) => (req: any, res: any) => {
+const applyMiddleware = (handler)  => (req, res) => {
 	return corsHandler(req, res, (_) => {
     console.log("CORS Handler added");
 		return bodyParser.json()(req, res, () => {

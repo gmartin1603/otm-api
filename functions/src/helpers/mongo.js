@@ -1,12 +1,12 @@
 import { MongoClient } from 'mongodb';
 
-let connection: any;
+let connection;
 
 // const connectionString = "mongodb://localhost:27017/OTM-Backup-Staging";
 // const connectionString = "mongodb://127.0.0.1:27017/OTM-Backup-Staging";
 const connectionString = "mongodb://127.0.0.1:27017/OTM-Backup";
 
-export const connectToMongoDB = (cb: (error?: any) => void) => {
+export const connectToMongoDB = (cb) => {
   console.log("Connecting to MongoDB");
   MongoClient.connect(connectionString)
   .then((client) => {

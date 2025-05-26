@@ -6,8 +6,7 @@
     "dev": "npm --prefix ./functions run serve",
     "add-controller": "node ./functions/scripts/add-controller.js",
     "use-stage": "firebase use staging",
-    "use-prod": "firebase use production",
-    "install": "npm --prefix ./functions install"
+    "use-prod": "firebase use production"
   },
   "private": true
 }

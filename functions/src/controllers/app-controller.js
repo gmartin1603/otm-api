@@ -10,7 +10,7 @@
 import appService from "../services/app-service";
 import { handlePromise, handleResponse } from "../services/common-service";
 
-const appController = async (req: any, res: any) => {
+const appController = async (req, res) => {
   // Get the appService method name from the last route of the request URL
   const method = req.url.split("/").pop();
 

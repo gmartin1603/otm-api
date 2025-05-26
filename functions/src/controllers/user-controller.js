@@ -10,7 +10,7 @@
 import userService from "../services/user-service";
 import { handlePromise, handleResponse } from "../services/common-service";
 
-const userController = async (req: any, res: any) => {
+const userController = async (req, res) => {
   // Get the userService method name from the last route of the request URL
   const method = req.url.split("/").pop();
 

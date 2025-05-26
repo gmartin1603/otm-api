@@ -69,3 +69,5 @@ functions/yarn.lock
 functions/package-lock.json
 package-lock.json
 yarn.lock
+functions/src/private/*
+functions/lib/private/*

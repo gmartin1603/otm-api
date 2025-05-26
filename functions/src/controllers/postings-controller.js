@@ -10,7 +10,7 @@
 import postingsService from "../services/postings-service";
 import { handlePromise, handleResponse } from "../services/common-service";
 
-const postingsController = async (req: any, res: any) => {
+const postingsController = async (req, res) => {
   // Get the postingsService method name from the last route of the request URL
   const method = req.url.split("/").pop();
 
