@@ -27,7 +27,12 @@
 	"launch": {
 		"version": "0.2.0",
 		"configurations": [
-			
+			{
+        "name": "Firebase Serve",
+        "type": "node-terminal",
+        "request": "launch",
+        "command": "firebase serve --only functions"
+      }
 		],
 		"compounds": [
 			

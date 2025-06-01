@@ -7,7 +7,7 @@
     "prebuild": "",
     "preserve": "npm run build",
     "serve": "firebase serve --only functions",
-    "dev": "npm run build && firebase serve --only functions",
+    "dev": "tsc --watch",
     "predeploy": "npm run build",
     "deploy": "firebase deploy --only functions",
     "use-stage": "firebase use staging",
@@ -28,6 +28,8 @@
     "mongodb": "6.7"
   },
   "devDependencies": {
+    "@types/express": "^5.0.2",
+    "@types/node": "^22.15.21",
     "@typescript-eslint/eslint-plugin": "^8.32.1",
     "@typescript-eslint/parser": "^8.32.1",
     "firebase-functions-test": "^3.1.0",

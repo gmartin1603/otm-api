@@ -3,7 +3,9 @@
   "version": "5.0.0",
   "description": "OTM API Parent Project",
   "scripts": {
-    "dev": "npm --prefix ./functions run serve",
+    "dev": "npm --prefix ./functions run dev",
+    "build": "npm --prefix ./functions run build",
+    "serve": "npm --prefix ./functions run serve",
     "add-controller": "node ./functions/scripts/add-controller.js",
     "use-stage": "firebase use staging",
     "use-prod": "firebase use production"

@@ -1,0 +1,182 @@
+{
+	"info": {
+		"_postman_id": "8ecfea5a-b68c-4510-91e5-55219781c252",
+		"name": "OTM API Test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11491607",
+		"_collection_link": "https://dark-moon-406020.postman.co/workspace/OTM~f2cf6edc-e3f2-4da4-88cf-b4a5cbef76d0/collection/11491607-8ecfea5a-b68c-4510-91e5-55219781c252?action=share&source=collection_link&creator=11491607"
+	},
+	"item": [
+		{
+			"name": "Test",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"foo\": \"bar\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/jobs",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"jobs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Jobs",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"foo\": \"bar\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/jobs/conc",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"jobs",
+						"conc"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Job",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Mobile\",\r\n  \"dept\": \"conc\",\r\n  \"order\": 3,\r\n  \"group\": \"mbl\",\r\n  \"first\": true,\r\n  \"second\": true,\r\n  \"created\": \"01-26-25 6:33:00\",\r\n  \"lastModified\": \"Apr 02, 2024 10:48 am\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/jobs/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"jobs",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Postings",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/postings",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"postings"
+					],
+					"query": [
+						{
+							"key": "jobId",
+							"value": "67969e26015f86ff28a3ea4e",
+							"disabled": true
+						},
+						{
+							"key": "date",
+							"value": "2025-01-10T06:00:00.000Z",
+							"disabled": true
+						},
+						{
+							"key": "shift",
+							"value": "first",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Posting",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"date\": {\r\n    \"$date\": \"2025-01-12T06:00:00.000Z\"\r\n  },\r\n  \"creator\": \"G.Martin\",\r\n  \"created\": {\r\n    \"$date\": \"2025-01-01T06:00:00.000Z\"\r\n  },\r\n  \"shift\": \"first\",\r\n  \"down\": {\r\n    \"$date\": \"2025-01-09T06:00:00.000Z\"\r\n  },\r\n  \"seg\": {\r\n    \"one\": {\r\n      \"trade\": false,\r\n      \"forced\": false,\r\n      \"name\": \"01/09\"\r\n    }\r\n  },\r\n  \"pos\": \"67969e26015f86ff28a3ea4e\",\r\n  \"tag\": {\r\n    \"reason\": \"Show?\"\r\n  },\r\n  \"bids\": []\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/postings/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"postings",
+						"create"
+					],
+					"query": [
+						{
+							"key": "jobId",
+							"value": "67969e26015f86ff28a3ea4e",
+							"disabled": true
+						},
+						{
+							"key": "date",
+							"value": "2025-01-10T06:00:00.000Z",
+							"disabled": true
+						},
+						{
+							"key": "shift",
+							"value": "first",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

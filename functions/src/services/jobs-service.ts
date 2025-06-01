@@ -10,12 +10,22 @@ import { handlePromise } from "./common-service";
 // Firestore helpers (if needed)
 // const { getAuth } = require("firebase-admin/auth");
 import { db } from "../helpers/firebase";
+import { Request } from "express";
+
+declare type Job = {
+  id: string;
+  label: string;
+  group: string;
+  dept: string;
+  order: number;
+  [key: string]: any; // Allow additional properties
+};
 
 const jobsService = {
-  getJobs: async (req) => {
+  getJobs: async (req: Request) => {
     const { depts } = req.body;
-    // console.log(depts);
-    let jobs = [];
+    console.log(depts);
+    let jobs: Job[] = [];
 
     // Get all jobs for each department
     for (const dept of depts) {
@@ -25,7 +35,7 @@ const jobsService = {
         throw error;
       } else {
         // console.log("Successfully got jobs for department:", dept);
-        result.forEach(doc => {
+        result.forEach((doc: any) => {
           jobs.push(doc.data());
         });
       }
@@ -33,7 +43,7 @@ const jobsService = {
 
     // Order jobs by order with groups by dept
     let res = [];
-    let map = {};
+    let map: { [key: string]: Job[] } = {};
     jobs.forEach(job => {
       if (!map[job.dept]) {
         map[job.dept] = [];
@@ -49,7 +59,7 @@ const jobsService = {
     return res;
   },
 
-  getJob: async (req) => {
+  getJob: async (req: Request) => {
     const { dept, id } = req.body;
 
     const get_job_api = () => db.collection(dept).doc(id).get();

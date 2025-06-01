@@ -10,12 +10,12 @@ require("dotenv").config();
 const { handlePromise, handleResponse, writeLog } = require("./common-service");
 const { getAuth } = require("firebase-admin/auth");
 const { db, admin } = require("../helpers/firebase");
-const API_VERSION = process.env.NODE_API_VERSION;
+const API_VERSION = require("../helpers/constants").API_VERSION;
 
 const appService = {
 
-  getVersion: () => {
-    return { version: API_VERSION };
+  getVersion: async () => {
+    return Promise.resolve({ version: API_VERSION });
   },
 
   
