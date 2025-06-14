@@ -1,11 +1,5 @@
-/**
- * @module devApp-service
- * @requires firebase-admin/auth
- * @description This module provides the service for the "/devApp/*" routes
- * @description devApp-service handles the business logic for /devApp endpoints
- * @description devApp-service is called by and returns to devApp-controller
- * @exports devAppService
- */
+import { Service } from "../Types/Service";
+
 const { handlePromise, handleResponse } = require("./common-service");
 // Firestore helpers (if needed)
 // const { getAuth } = require("firebase-admin/auth");
@@ -13,7 +7,9 @@ const { db, admin } = require("../helpers/firebase");
 const { getConnection } = require("../helpers/mongo");
 const buildArchive = require("../helpers/buildArchive");
 
-const devAppService = {
+const devAppService: Service = {
+  name: "devAppService",
+
 	copyCollectionToMongo: async (body) => {
 		//Get all department docs from Firestore
 		const get_example_api = () => db.collection(body.collection).get();
@@ -132,8 +128,9 @@ const devAppService = {
           );
         })
         .catch((error) => {
-          console.error("Error writing document: ", message);
-          errorResponse(res, error);
+          // console.error("Error writing document: ", message);
+          // errorResponse(res, error);
+          throw new Error(error);
         });
 
       const mdb = getConnection();
@@ -152,16 +149,16 @@ const devAppService = {
     return `${updated} Documents successfully archived. Start date: ${new Date(start).toDateString()}`;
   },
 
-  updateArchive: async (body) => {
-    let endDate = new Date();
+  // updateArchive: async (body) => {
+  //   let endDate = new Date();
 
-    const mdb = getConnection();
-    const collection = mdb.collection(`${body.dept}-archive`);
+  //   const mdb = getConnection();
+  //   const collection = mdb.collection(`${body.dept}-archive`);
 
-    const result = await collection.updateOne({ id: doc }, { $set: update });
-    console.log("Update result: ", result);
-    return `Successfully updated ${result.modifiedCount} docs`;
-  },
+  //   const result = await collection.updateOne({ id: doc }, { $set: update });
+  //   console.log("Update result: ", result);
+  //   return `Successfully updated ${result.modifiedCount} docs`;
+  // },
 };
 
 export default devAppService;

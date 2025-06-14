@@ -1,24 +1,13 @@
-/**
- * @module user-service
- * @requires firebase-admin/auth
- * @description This module provides the service for the "/user/*" routes 
- * @description user-service handles the business logic for /user endpoints
- * @description user-service is called by and returns to user-controller
- * @exports userService
- */
+import { Service } from "../Types/Service";
+
 const { handlePromise, handleResponse } = require("./common-service");
 // Firestore helpers (if needed)
 const { getAuth } = require("firebase-admin/auth");
 const { db, admin } = require("../helpers/firebase");
 
-const userService = {
-  /**
-   * Fetches user data from Firebase Auth and Firestore
-   * @param {Object} req - Express request object
-   * @param {Object} req.body - Request body object { uid: {String}, email: {String}
-   * @requires req.body - Field 'uid' or 'email' required
-   * @returns {Object} - User data object as { auth: {Object}, profile: {Object} }
-   */
+const userService: Service = {
+  name: "userService",
+  
   getUser: async (req) => {
     const body = req.body;
     console.log("Req body: ", body);

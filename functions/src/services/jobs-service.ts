@@ -1,32 +1,21 @@
-/**
- * @module jobs-service
- * @requires firebase-admin/auth
- * @description This module provides the service for the "/jobs/*" routes 
- * @description jobs-service handles the business logic for /jobs endpoints
- * @description jobs-service is called by and returns to jobs-controller
- * @exports jobsService
- */
 import { handlePromise } from "./common-service";
-// Firestore helpers (if needed)
-// const { getAuth } = require("firebase-admin/auth");
 import { db } from "../helpers/firebase";
-import { Request } from "express";
+import { CreateJobRequest, DeleteJobRequest, GetJobRequest, GetJobsRequest, Job, UpdateJobRequest } from "../Types/jobRequests";
+import { Service } from "../Types/Service";
 
-declare type Job = {
-  id: string;
-  label: string;
-  group: string;
-  dept: string;
-  order: number;
-  [key: string]: any; // Allow additional properties
-};
+// declare type Job = {
+//   id: string;
+//   label: string;
+//   group: string;
+//   dept: string;
+//   order: number;
+//   [key: string]: any; // Allow additional properties
+// };
 
-const jobsService = {
+const jobsService: Service = {
   name: "jobsService",
-  getName: () => jobsService.name,
 
-  getJobs: async (body) => {
-    const { depts } = body;
+  getJobs: async ({ depts }: GetJobsRequest) => {
     console.log(depts);
     let jobs: Job[] = [];
 
@@ -60,24 +49,23 @@ const jobsService = {
     return res;
   },
 
-  getJob: async (req: Request) => {
-    const { dept, id } = req.body;
+  getJob: async ({ dept, id }: GetJobRequest): Promise<Job> => {
 
     const get_job_api = () => db.collection(dept).doc(id).get();
     const [result, error] = await handlePromise(get_job_api);
 
-    if (error) {
-      // console.error("Error getting job:", error);
+    if (error)
       throw error;
-    } else {
-      // console.log("Successfully got job:", result.data());
-      return result.data();
+
+    if (!result.exists) {
+      throw new Error(`Job with ID ${id} not found in department ${dept}`);
     }
+    const jobData = result.data() as Job;
+    // console.log("Job data:", jobData);
+    return jobData;
   },
 
-  addJob: async (req) => {
-    const { dept, job } = req.body;
-
+  addJob: async ({ dept, job }: CreateJobRequest) => {
     // console.log(job)
     let name = job.label.toLowerCase().replace(/\s/g, "-");
     // Generate unique ID
@@ -130,8 +118,7 @@ const jobsService = {
   },
 
   //TODO: Test this function
-  updateJob: async (req) => {
-    const { dept, job } = req.body;
+  updateJob: async ({ dept, job }: UpdateJobRequest) => {
 
     const update_job_api = () => db.collection(dept).doc(job.id).set(job, { merge: true });
     const [result, error] = await handlePromise(update_job_api);
@@ -146,8 +133,7 @@ const jobsService = {
   },
 
   //TODO: Test this function
-  deleteJob: async (req) => {
-    const { dept, id } = req.body;
+  deleteJob: async ({ dept, id }: DeleteJobRequest) => {
 
     const delete_job_api = () => db.collection(dept).doc(id).delete();
     const [result, error] = await handlePromise(delete_job_api);

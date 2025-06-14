@@ -3,14 +3,15 @@ import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import { writeLog } from "./services/common-service";
+import { connectToMongoDB } from "./helpers/mongo";
+import { Request, Response } from "express";
+import RequestHandler from "./handlers/RequestHandler";
+import postingsService from "./services/postings-service";
+import jobsService from "./services/jobs-service";
+import userService from "./services/user-service";
+import devAppService from "./services/devApp-service";
+import appService from "./services/app-service";
 
-// **SCRIPT** CONTROLLER IMPORT START
-// import postingsController from "./controllers/postings-controller";
-import jobsController from "./controllers/jobs-controller";
-import userController from "./controllers/user-controller";
-import appController from "./controllers/app-controller";
-import devAppController from "./controllers/devApp-controller";
-// **SCRIPT** CONTROLLER IMPORT END
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -25,14 +26,6 @@ if (process.env.NODE_ENV == "prod") {
 }
 
 console.log("CURRENT ENV: ", env);
-
-// Mongo Connection
-import { connectToMongoDB } from "./helpers/mongo";
-import { Request, Response } from "express";
-import RequestHandler from "./handlers/RequestHandler";
-import postingsService from "./services/postings-service";
-import jobsService from "./services/jobs-service";
-
 const corsHandler = cors({ origin: true });
 
 const applyMiddleware = (handler: (req: Request, res: Response) => any) => (req, res) => {
@@ -66,7 +59,7 @@ postingsApp.post("*", (req: Request, res: Response) => RequestHandler(req, res, 
 export const postings = functions.https.onRequest(applyMiddleware(postingsApp));
 
 const mainApp = express();
-mainApp.post("*", (req: Request, res: Response) => appController(req, res));
+mainApp.post("*", (req: Request, res: Response) => RequestHandler(req, res, appService));
 export const app = functions.https.onRequest(applyMiddleware(mainApp));
 
 const jobsApp = express();
@@ -74,11 +67,11 @@ jobsApp.post("*", (req: Request, res: Response) => RequestHandler(req, res, jobs
 export const jobs = functions.https.onRequest(applyMiddleware(jobsApp));
 
 const userApp = express();
-userApp.post("*", (req: Request, res: Response) => userController(req, res));
+userApp.post("*", (req: Request, res: Response) => RequestHandler(req, res, userService));
 export const user = functions.https.onRequest(applyMiddleware(userApp));
 
 const devAppExpress = express();
-devAppExpress.post("*", (req: Request, res: Response) => devAppController(req, res));
+devAppExpress.post("*", (req: Request, res: Response) => RequestHandler(req, res, devAppService));
 export const devApp = functions.https.onRequest(applyMiddleware(devAppExpress));
 
 // **SCRIPT** CONTROLLER ROUTING END

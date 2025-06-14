@@ -1,10 +1,9 @@
-
-// import postingsService from "../services/postings-service";
 import { handlePromise, handleResponse } from "../services/common-service";
 import { Request, Response } from "express";
+import { Service } from "../Types/Service";
 
-async function RequestHandler(req: Request, res: Response, service: any) {
-  const serviceName = service.getName ? service.getName() : "unknown-service";
+async function RequestHandler(req: Request, res: Response, service: Service) {
+  const serviceName = service.name || "unknown-service";
   // Get the service method name from the request URL
   const methodName = req.params[0].replace("/", "") || "";
 
