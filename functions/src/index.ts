@@ -1,7 +1,3 @@
-// const functions = require("firebase-functions");
-// const express = require("express");
-// const cors = require("cors");
-// const bodyParser = require("body-parser");
 import * as functions from "firebase-functions";
 import express from "express";
 import cors from "cors";
@@ -9,7 +5,7 @@ import bodyParser from "body-parser";
 import { writeLog } from "./services/common-service";
 
 // **SCRIPT** CONTROLLER IMPORT START
-import postingsController from "./controllers/postings-controller";
+// import postingsController from "./controllers/postings-controller";
 import jobsController from "./controllers/jobs-controller";
 import userController from "./controllers/user-controller";
 import appController from "./controllers/app-controller";
@@ -33,6 +29,9 @@ console.log("CURRENT ENV: ", env);
 // Mongo Connection
 import { connectToMongoDB } from "./helpers/mongo";
 import { Request, Response } from "express";
+import RequestHandler from "./handlers/RequestHandler";
+import postingsService from "./services/postings-service";
+import jobsService from "./services/jobs-service";
 
 const corsHandler = cors({ origin: true });
 
@@ -63,7 +62,7 @@ const applyMiddleware = (handler: (req: Request, res: Response) => any) => (req,
 // **SCRIPT** CONTROLLER ROUTING START
 
 const postingsApp = express();
-postingsApp.post("*", (req: Request, res: Response) => postingsController(req, res));
+postingsApp.post("*", (req: Request, res: Response) => RequestHandler(req, res, postingsService));
 export const postings = functions.https.onRequest(applyMiddleware(postingsApp));
 
 const mainApp = express();
@@ -71,7 +70,7 @@ mainApp.post("*", (req: Request, res: Response) => appController(req, res));
 export const app = functions.https.onRequest(applyMiddleware(mainApp));
 
 const jobsApp = express();
-jobsApp.post("*", (req: Request, res: Response) => jobsController(req, res));
+jobsApp.post("*", (req: Request, res: Response) => RequestHandler(req, res, jobsService));
 export const jobs = functions.https.onRequest(applyMiddleware(jobsApp));
 
 const userApp = express();

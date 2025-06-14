@@ -29,7 +29,14 @@ const postingsController = async (req, res) => {
       status: "success",
       message: "Successfully called postingsService method",
       data: result,
-      method: `postings-controller => ${method}`
+      method: `postings-controller => ${method}`,
+      request: {
+        method: req.method,
+        url: req.url,
+        params: req.params,
+        headers: JSON.stringify(req.headers),
+        body: JSON.stringify(req.body),
+      }
     };
 
     handleResponse(res, "success", response);

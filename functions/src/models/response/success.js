@@ -13,7 +13,7 @@ class Success {
       status: Joi.string().required(),
       message: Joi.string().required(),
       data: Joi.any(),
-      method: Joi.string().required()
+      method: Joi.string()
     });
     const { error } = schema.validate(this);
     

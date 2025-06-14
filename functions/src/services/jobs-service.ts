@@ -22,8 +22,11 @@ declare type Job = {
 };
 
 const jobsService = {
-  getJobs: async (req: Request) => {
-    const { depts } = req.body;
+  name: "jobsService",
+  getName: () => jobsService.name,
+
+  getJobs: async (body) => {
+    const { depts } = body;
     console.log(depts);
     let jobs: Job[] = [];
 
@@ -31,10 +34,8 @@ const jobsService = {
     for (const dept of depts) {
       const [result, error] = await handlePromise(() => db.collection(dept).where("id", "!=", "rota").orderBy("id").get());
       if (error) {
-        // console.error("Error getting jobs for department:", dept, error);
         throw error;
       } else {
-        // console.log("Successfully got jobs for department:", dept);
         result.forEach((doc: any) => {
           jobs.push(doc.data());
         });
