@@ -1,7 +1,9 @@
-import { handlePromise, handleResponse } from "../services/common-service";
 import { Request, Response } from "express";
 import { Service } from "../Types/type.Service";
 import { SuccessResponse } from "../Types/types.http";
+import CommonUtils from "../Types/class.CommonUtils";
+
+const _commonUtils = new CommonUtils();
 
 async function RequestHandler(req: Request, res: Response, service: Service) {
   const serviceName = service.name || "unknown-service";
@@ -9,12 +11,11 @@ async function RequestHandler(req: Request, res: Response, service: Service) {
   const methodName = req.params[0].replace("/", "") || "";
 
   const service_api = () => service[methodName](req.body);
-  const [result, error] = await handlePromise(service_api);
+  const [result, error] = await _commonUtils.handlePromise(service_api);
   let response: SuccessResponse<typeof result>;
 
   if (error) 
-    return handleResponse(res, "error", { error: error, controller: serviceName, method: methodName });
-
+    return _commonUtils.handleResponse(res, "error", { error: error, controller: serviceName, method: methodName });
 
   console.log(`Successfully called ${serviceName} => ${methodName}`);
   
@@ -38,7 +39,7 @@ async function RequestHandler(req: Request, res: Response, service: Service) {
     }
   };
 
-  return handleResponse(res, "success", response);
+  return _commonUtils.handleResponse(res, "success", response);
 };
 
 export default RequestHandler;

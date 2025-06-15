@@ -1,15 +1,15 @@
 import { Service } from "../Types/type.Service";
+import CommonUtils from "../Types/class.CommonUtils";
 
-const { handlePromise, handleResponse } = require("./common-service");
+const _commonUtils = new CommonUtils();
 // Firestore helpers (if needed)
 const { getAuth } = require("firebase-admin/auth");
-const { db, admin } = require("../helpers/firebase");
+const { db } = require("../helpers/firebase");
 
 const userService: Service = {
   name: "userService",
 
-  getUser: async (req) => {
-    const body = req.body;
+  getUser: async (body) => {
     console.log("Req body: ", body);
     const uid = body.uid;
     const email = body.email;
@@ -19,33 +19,25 @@ const userService: Service = {
       // throw { message: "No user ID provided", method: "getUser" };
     }
     
-    let user;
-    let error;
-    if (uid) {
-      const get_user_api = () => getAuth().getUser(uid);
-      [user, error] = await handlePromise(get_user_api);
-    } else {
-      const get_user_by_email_api = () => getAuth().getUserByEmail(email);
-      [user, error] = await handlePromise(get_user_by_email_api);
-    }
-
-    const get_user_profile_api = () => db.collection("users").doc(user.uid).get();
-    const [profile, profileError] = await handlePromise(get_user_profile_api);
+    const get_user_api = () => getAuth().getUser(uid);
+    const get_user_by_email_api = () => getAuth().getUserByEmail(email);
+    const [user, error] = await _commonUtils.handlePromise(uid? get_user_api : get_user_by_email_api);
 
     if (error) {
-      // console.error("Error fetching user data:", error);
-      throw new Error(error);
+      throw error;
     } 
+    const get_user_profile_api = () => db.collection("users").doc(user.uid).get();
+    const [profile, profileError] = await _commonUtils.handlePromise(get_user_profile_api);
+
     if (profileError) {
-      // console.error("Error fetching user profile data:", profileError);
-      throw new Error(profileError);
+      throw profileError;
     } else {
+      // TODO?: validate that the profile belongs to the user
       return { auth: user, profile: profile.data() };
     }
   },
 
-  createUser: async (req) => {
-    const body = req.body;
+  createUser: async (body) => {
     // console.log(body);
     if (!body.auth || !body.profile) {
       let msg = "";
@@ -59,7 +51,7 @@ const userService: Service = {
     }
     const create_user_auth = () => getAuth().createUser(body.auth);
 
-    const [userRecord, error] = await handlePromise(create_user_auth);
+    const [userRecord, error] = await _commonUtils.handlePromise(create_user_auth);
 
     if (error) {
       throw error;
@@ -69,22 +61,21 @@ const userService: Service = {
     body.profile.id = userRecord.uid;
     const create_user_profile = () => db.collection("users").doc(userRecord.uid).set({ ...body.profile, email: body.auth.email }, { merge: true });
 
-    const [userProfile, profileError] = await handlePromise(create_user_profile);
+    const [userProfile, profileError] = await _commonUtils.handlePromise(create_user_profile);
 
     if (profileError) {
       // console.error("Error writing user profile:", profileError);
-      throw new Error(profileError);
+      throw profileError;
     } else {
       return { auth: userRecord, profile: userProfile };
     }
   },
 
-  getVerificationLink: async (req) => {
-    const body = req.body;
+  getVerificationLink: async (body) => {
     const email = body.email;
     // console.log("Sending verification email to: ", email);
     const send_verification_email_api = () => getAuth().generateEmailVerificationLink(email)
-    const [link, error] = await handlePromise(send_verification_email_api);
+    const [link, error] = await _commonUtils.handlePromise(send_verification_email_api);
     
     if (error) {
       console.error("Error sending verification email:", error);
@@ -95,12 +86,11 @@ const userService: Service = {
     }
   },
 
-  getPasswordResetLink: async (req) => {
-    const body = req.body;
+  getPasswordResetLink: async (body) => {
     const email = body.email;
     // console.log("Sending password reset email to: ", email);
     const send_password_reset_email_api = () => getAuth().generatePasswordResetLink(email);
-    const [link, error] = await handlePromise(send_password_reset_email_api);
+    const [link, error] = await _commonUtils.handlePromise(send_password_reset_email_api);
 
     if (error) {
       console.error("Error sending password reset email:", error);
@@ -111,9 +101,8 @@ const userService: Service = {
     }
   },
 
-  updateUser: async (req, res) => {
-    const obj = req.body;
-    const uid = obj.uid;
+  updateUser: async (body) => {
+    const uid = body.uid;
     if (!uid) {
       throw new Error("No user ID provided");
     }
@@ -122,17 +111,17 @@ const userService: Service = {
       db
         .collection("users")
         .doc(uid)
-        .set(obj.profile, { merge: true });
-    const [user, error] = await handlePromise(update_profile_api);
+        .set(body.profile, { merge: true });
+    const [user, error] = await _commonUtils.handlePromise(update_profile_api);
 
     if (error) {
-      throw new Error(error);
+      throw error;
     } else {
-      if (obj.auth) {
-        const update_auth_api = () => getAuth().updateUser(uid, obj.auth);
-        const [auth, authError] = await handlePromise(update_auth_api);
+      if (body.auth) {
+        const update_auth_api = () => getAuth().updateUser(uid, body.auth);
+        const [auth, authError] = await _commonUtils.handlePromise(update_auth_api);
         if (authError) {
-          throw new Error(authError);
+          throw authError;
         } else {
           let response = {
             message: "Successfully updated user",
@@ -151,8 +140,7 @@ const userService: Service = {
     }
   },
 
-  disableUser: async (req, res) => {
-    let body = req.body;
+  disableUser: async (body) => {
     const uid = body.uid;
     if (!uid) {
       throw new Error("No user ID provided");
@@ -161,32 +149,31 @@ const userService: Service = {
     }
 
     const disable_user_api = () => getAuth().updateUser(uid, { disabled: body.disabled });
-    const [user, error] = await handlePromise(disable_user_api);
+    const [user, error] = await _commonUtils.handlePromise(disable_user_api);
 
     if (error) {
-      throw new Error(error);
+      throw error;
     } else {
       return user;
     }
   },
 
-  deleteUser: async (req, res) => {
-    const uid = req.body.uid;
+  deleteUser: async ({uid}) => {
     if (!uid) {
       throw new Error("No user ID provided");
     }
 
     const delete_auth_api = () => getAuth().deleteUser(uid);
-    const [auth, error] = await handlePromise(delete_auth_api);
+    const [auth, error] = await _commonUtils.handlePromise(delete_auth_api);
 
     if (error) {
-      throw new Error(error);
+      throw error;
     } else {
       const delete_profile_api = () => db.collection("users").doc(uid).delete();
-      const [profile, profileError] = await handlePromise(delete_profile_api);
+      const [profile, profileError] = await _commonUtils.handlePromise(delete_profile_api);
 
       if (profileError) {
-        throw new Error(profileError);
+        throw profileError;
       } else {
         let response = {
           message: "Successfully deleted user",

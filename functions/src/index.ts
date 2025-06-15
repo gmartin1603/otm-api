@@ -2,7 +2,7 @@ import * as functions from "firebase-functions";
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
-import { writeLog } from "./services/common-service";
+import CommonUtils from "./Types/class.CommonUtils";
 import { connectToMongoDB } from "./helpers/mongo";
 import { Request, Response } from "express";
 import RequestHandler from "./handlers/RequestHandler";
@@ -15,6 +15,7 @@ import appService from "./services/app-service";
 
 const dotenv = require("dotenv");
 dotenv.config();
+const _commonUtils = new CommonUtils();
 
 let env: string;
 // let corsOrigin = "*";
@@ -39,7 +40,7 @@ const applyMiddleware = (handler: (req: Request, res: Response) => any) => (req,
 					// return res.status(500).json({ error: "Failed to connect to MongoDB" });
 				}
 				const method = req.url.split("/").pop();
-				writeLog("activity", {
+				_commonUtils.writeLog("activity", {
 					message: `API call made to method: ${method}`,
 					headers: req.headers,
 					body: req.body,

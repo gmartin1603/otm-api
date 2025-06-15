@@ -1,6 +1,8 @@
 import { Service } from "../Types/type.Service";
-import { handlePromise } from "./common-service";
+import CommonUtils from "../Types/class.CommonUtils";
 
+
+const _commonUtils = new CommonUtils();
 require("dotenv").config();
 // const { handlePromise, handleResponse, writeLog } = require("./common-service");
 // const { getAuth } = require("firebase-admin/auth");
@@ -18,8 +20,9 @@ const appService: Service = {
     // console.log("Sending password reset email to: ", email);
     const send_password_reset_email_api = () => {
       // Send email here
+      return Promise.reject(new Error("This function is not implemented yet."));
     }
-    const [_, error] = await handlePromise(send_password_reset_email_api);
+    const [_, error] = await _commonUtils.handlePromise(send_password_reset_email_api);
     if (error) {
       console.error("Error sending password reset email:", error);
       throw error;

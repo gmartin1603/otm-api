@@ -1,8 +1,9 @@
-import { handlePromise } from "./common-service";
+import CommonUtils from "../Types/class.CommonUtils";
 import { db } from "../helpers/firebase";
 import { CreateJobRequest, DeleteJobRequest, GetJobRequest, GetJobsRequest, Job, UpdateJobRequest } from "../Types/types.jobService";
 import { Service } from "../Types/type.Service";
 
+const _commonUtils = new CommonUtils();
 
 const jobsService: Service = {
   name: "jobsService",
@@ -13,7 +14,7 @@ const jobsService: Service = {
 
     // Get all jobs for each department
     for (const dept of depts) {
-      const [result, error] = await handlePromise(() => db.collection(dept).where("id", "!=", "rota").orderBy("id").get());
+      const [result, error] = await _commonUtils.handlePromise(() => db.collection(dept).where("id", "!=", "rota").orderBy("id").get());
       if (error) {
         throw error;
       } else {
@@ -44,7 +45,7 @@ const jobsService: Service = {
   getJob: async ({ dept, id }: GetJobRequest): Promise<Job> => {
 
     const get_job_api = () => db.collection(dept).doc(id).get();
-    const [result, error] = await handlePromise(get_job_api);
+    const [result, error] = await _commonUtils.handlePromise(get_job_api);
 
     if (error)
       throw error;
@@ -67,7 +68,7 @@ const jobsService: Service = {
     let ids = [];
 
     const get_ids_api = () => db.collection(dept).get()
-    const [result, ids_error] = await handlePromise(get_ids_api);
+    const [result, ids_error] = await _commonUtils.handlePromise(get_ids_api);
     if (ids_error) {
       // console.error("Error getting job IDs:", ids_error);
       throw ids_error;
@@ -99,7 +100,7 @@ const jobsService: Service = {
     job.order = ids.length + 1;
 
     const add_job_api = () => db.collection(dept).doc(job.id).set(job);
-    const [jobDoc, error] = await handlePromise(add_job_api);
+    const [jobDoc, error] = await _commonUtils.handlePromise(add_job_api);
     if (error) {
       // console.error("Error adding job:", error);
       throw error;
@@ -113,7 +114,7 @@ const jobsService: Service = {
   updateJob: async ({ dept, job }: UpdateJobRequest) => {
 
     const update_job_api = () => db.collection(dept).doc(job.id).set(job, { merge: true });
-    const [result, error] = await handlePromise(update_job_api);
+    const [result, error] = await _commonUtils.handlePromise(update_job_api);
 
     if (error) {
       // console.error("Error updating job:", error);
@@ -128,7 +129,7 @@ const jobsService: Service = {
   deleteJob: async ({ dept, id }: DeleteJobRequest) => {
 
     const delete_job_api = () => db.collection(dept).doc(id).delete();
-    const [result, error] = await handlePromise(delete_job_api);
+    const [result, error] = await _commonUtils.handlePromise(delete_job_api);
 
     if (error) {
       // console.error("Error deleting job:", error);

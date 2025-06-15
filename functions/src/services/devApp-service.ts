@@ -1,11 +1,12 @@
 import { Service } from "../Types/type.Service";
-
-const { handlePromise, handleResponse } = require("./common-service");
+import CommonUtils from "../Types/class.CommonUtils";
 // Firestore helpers (if needed)
 // const { getAuth } = require("firebase-admin/auth");
-const { db, admin } = require("../helpers/firebase");
+const { db } = require("../helpers/firebase");
 const { getConnection } = require("../helpers/mongo");
 const buildArchive = require("../helpers/buildArchive");
+
+const _commonUtils = new CommonUtils();
 
 const devAppService: Service = {
   name: "devAppService",
@@ -13,7 +14,7 @@ const devAppService: Service = {
 	copyCollectionToMongo: async (body) => {
 		//Get all department docs from Firestore
 		const get_example_api = () => db.collection(body.collection).get();
-		const [data, error] = await handlePromise(get_example_api);
+		const [data, error] = await _commonUtils.handlePromise(get_example_api);
 		console.log("Firebase data: ", data.docs.length);
 		let firebaseDocs = data.docs.map((doc) => doc.data());
 
@@ -40,7 +41,7 @@ const devAppService: Service = {
 	copyArchiveToMongo: async (body) => {
 		const get_example_api = () =>
 			db.collection(body.dept).doc("rota").collection("archive").get();
-		const [data, error] = await handlePromise(get_example_api);
+		const [data, error] = await _commonUtils.handlePromise(get_example_api);
 		console.log("Firebase data: ", data.docs.length);
 		let firebaseDocs = data.docs.map((doc) => {
       return {
