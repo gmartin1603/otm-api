@@ -14,7 +14,12 @@ const jobsService: Service = {
 
     // Get all jobs for each department
     for (const dept of depts) {
-      const [result, error] = await _commonUtils.handlePromise(() => db.collection(dept).where("id", "!=", "rota").orderBy("id").get());
+      const [result, error] = await _commonUtils.handlePromise(
+                                () => db.collection(dept)
+                                      .where("id", "!=", "rota")
+                                      .orderBy("id")
+                                      .get()
+                                    );
       if (error) {
         throw error;
       } else {
@@ -27,6 +32,7 @@ const jobsService: Service = {
     // Order jobs by order with groups by dept
     let res = [];
     let map: { [key: string]: Job[] } = {};
+
     jobs.forEach(job => {
       if (!map[job.dept]) {
         map[job.dept] = [];
@@ -43,29 +49,23 @@ const jobsService: Service = {
   },
 
   getJob: async ({ dept, id }: GetJobRequest): Promise<Job> => {
-
     const get_job_api = () => db.collection(dept).doc(id).get();
     const [result, error] = await _commonUtils.handlePromise(get_job_api);
 
     if (error)
       throw error;
 
-    if (!result.exists) {
+    if (!result.exists)
       throw new Error(`Job with ID ${id} not found in department ${dept}`);
-    }
-    const jobData = result.data() as Job;
-    // console.log("Job data:", jobData);
-    return jobData;
+
+    return result.data() as Job;
   },
 
   addJob: async ({ dept, job }: CreateJobRequest) => {
-    // console.log(job)
     let name = job.label.toLowerCase().replace(/\s/g, "-");
     // Generate unique ID
-    let id = `${job.group}-${name}-${Math.random()
-        .toString(36)
-        .substring(2, 9)}`;
-    let ids = [];
+    let id = `${job.group}-${name}-${Math.random().toString(36).substring(2, 9)}`;
+    const ids = [];
 
     const get_ids_api = () => db.collection(dept).get()
     const [result, ids_error] = await _commonUtils.handlePromise(get_ids_api);
@@ -81,32 +81,30 @@ const jobsService: Service = {
     if (ids.includes(id)) {
       let i = 0;
       do {
-          console.warn("Generating new ID attempt: " + i);
-          id = `${job.group}-${name}-${Math.random()
-              .toString(36)
-              .substring(2, 9)}`;
-          i++;
+        id = `${job.group}-${name}-${Math.random().toString(36).substring(2, 9)}`;
+        i++;
       } while (ids.includes(id) || i < 100);
 
-      if (i >= 100) {
-          console.error("Failed to generate new ID");
-          throw new Error("Job not created: Failed to generate new ID");
-      } else {
-        console.log("New ID generated: " + id);
-      }
+      if (i >= 100)
+        throw new Error("Job not created: Failed to generate new ID");
+      
+      _commonUtils.writeLog("activity", {
+        message: `Job ID conflict resolved, new ID: ${id}`,
+        job: job,
+      });
     }
 
     job.id = id;
     job.order = ids.length + 1;
 
     const add_job_api = () => db.collection(dept).doc(job.id).set(job);
-    const [jobDoc, error] = await _commonUtils.handlePromise(add_job_api);
+    const [res, error] = await _commonUtils.handlePromise(add_job_api);
     if (error) {
       // console.error("Error adding job:", error);
       throw error;
     } else {
       // console.log("Successfully added job:", job);
-      return { id: id, ...jobDoc };
+      return { id: id, ...res };
     }
   },
 
@@ -127,6 +125,8 @@ const jobsService: Service = {
 
   //TODO: Test this function
   deleteJob: async ({ dept, id }: DeleteJobRequest) => {
+
+    //TODO!: Check for dependencies before deleting
 
     const delete_job_api = () => db.collection(dept).doc(id).delete();
     const [result, error] = await _commonUtils.handlePromise(delete_job_api);

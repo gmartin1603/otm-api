@@ -3,7 +3,7 @@ import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import CommonUtils from "./Types/class.CommonUtils";
-import { connectToMongoDB } from "./helpers/mongo";
+// import { connectToMongoDB } from "./helpers/mongo";
 import { Request, Response } from "express";
 import RequestHandler from "./handlers/RequestHandler";
 import postingsService from "./services/postings-service";
@@ -18,10 +18,10 @@ dotenv.config();
 const _commonUtils = new CommonUtils();
 
 let env: string;
-// let corsOrigin = "*";
+let corsOrigin = "*";
 if (process.env.NODE_ENV == "prod") {
   env = "prod";
-  // corsOrigin = process.env.NODE_ENV_CORS_URL || "*";
+  corsOrigin = process.env.NODE_ENV_CORS_URL || "*";
 } else {
   env = "dev";
 }
@@ -33,21 +33,21 @@ const applyMiddleware = (handler: (req: Request, res: Response) => any) => (req,
 	return corsHandler(req, res, (_) => {
     console.log("CORS Handler added");
 		return bodyParser.json()(req, res, () => {
-      console.log("Adding MongoDB Middleware");
-			connectToMongoDB((error) => {
-				if (error) {
-					console.error("Failed to connect to MongoDB", error);
-					// return res.status(500).json({ error: "Failed to connect to MongoDB" });
-				}
-				const method = req.url.split("/").pop();
-				_commonUtils.writeLog("activity", {
-					message: `API call made to method: ${method}`,
-					headers: req.headers,
-					body: req.body,
-				}).then(() => {
-					return handler(req, res);
-				});
-			});
+      // console.log("Adding MongoDB Middleware");
+			// connectToMongoDB((error) => {
+			// 	if (error) {
+			// 		console.error("Failed to connect to MongoDB", error);
+			// 		// return res.status(500).json({ error: "Failed to connect to MongoDB" });
+			// 	}
+      const method = req.params[0] || "unknown";
+      _commonUtils.writeLog("activity", {
+        message: `API call made to method: ${method}`,
+        headers: req.headers,
+        body: req.body,
+      }).then(() => {
+        return handler(req, res);
+      });
+			// });
 		});
 	});
 };
@@ -96,32 +96,3 @@ export const devApp = functions.https.onRequest(applyMiddleware(devAppExpress));
 // 	logger.info("Hello logs!", { structuredData: true });
 // 	response.send("Hello from Firebase!");
 // });
-
-
-/**
- * DEV MODE
- * This section runs the express app in watch mode during development.
- * Dev mode does not use the Firebase CLI or Emulator.
- * It is intended for local development and testing.
- * To run the app in dev mode, use the command: npm run dev
- * The app will be available at http://localhost:5000/otm-staging-725a6/us-central1/
- */
-// if (env === "dev") {
-//   const baseApiUrl = process.env.BASE_API_URL || "/otm-staging-725a6/us-central1";
-//   const app = express();
-//   app.use(cors({ origin: true }));
-//   app.use(bodyParser.json());
-
-//   // **SCRIPT** CONTROLLER ROUTING START
-//   app.post(`${baseApiUrl}/postings`, (req: Request, res: Response) => postingsController(req, res));
-//   app.post("/jobs", (req: Request, res: Response) => jobsController(req, res));
-//   app.post("/user", (req: Request, res: Response) => userController(req, res));
-//   app.post(`${baseApiUrl}/app`, (req: Request, res: Response) => appController(req, res));
-//   app.post("/devApp", (req: Request, res: Response) => devAppController(req, res));
-//   // **SCRIPT** CONTROLLER ROUTING END
-
-//   const PORT = process.env.PORT || 5000;
-//   app.listen(PORT, () => {
-//     console.log(`Server is running on port ${PORT}`);
-//   });
-// }

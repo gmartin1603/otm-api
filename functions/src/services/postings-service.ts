@@ -1,7 +1,8 @@
 import { DeletePostRequest, GetPostRequest, GetPostsRequest, UpdatePostRequest } from "../Types/types.postingsService";
 import { Service } from "../Types/type.Service";
+import CommonUtils from "../Types/class.CommonUtils";
 
-const { handlePromise } = require("./common-service");
+const _commonUtils = new CommonUtils();
 // Firestore helpers (if needed)
 // const { getAuth } = require("firebase-admin/auth");
 const { db, admin } = require("../helpers/firebase");
@@ -10,22 +11,19 @@ const jobsService = require("./jobs-service");
 const postingsService: Service = {
   name: "postingsService",
 
-  getPost: async (body: GetPostRequest) => {
-    const {id} = body;
-
+  getPost: async ({id, dept}: GetPostRequest) => {
     if (!id) {
       throw new Error("No ID provided");
     }
-  
-    const get_post_api = () => db.collection(`${body.dept}-posts`).doc(id).get();
-    const [data, error] = await handlePromise(get_post_api);
-  
-    if (error)
-      throw new Error(error);
     
-    if (!data.exists) {
+    const get_post_api = () => db.collection(`${dept}-posts`).doc(id).get();
+    const [data, error] = await _commonUtils.handlePromise(get_post_api);
+
+    if (error)
+      throw error;
+    
+    if (!data.exists)
       throw new Error(`Post with ID ${id} does not exist`);
-    }
 
     return data.data();
   },
@@ -34,10 +32,10 @@ const postingsService: Service = {
     const dept = body.dept;
   
     const get_posts_api = () => db.collection(`${dept}-posts`).get();
-    const [result, error] = await handlePromise(get_posts_api);
+    const [result, error] = await _commonUtils.handlePromise(get_posts_api);
   
     if (error)
-      throw new Error(error);
+      throw error;
 
     let postings = result.docs.map(doc => doc.data());
     return { total: postings.length, postings: postings };
@@ -58,20 +56,20 @@ const postingsService: Service = {
     
     // Get user display name from user ID
     const get_user_api = () => admin.auth().getUser(userId);
-    const [user, userError] = await handlePromise(get_user_api);
+    const [user, userError] = await _commonUtils.handlePromise(get_user_api);
 
     if (userError) {
-      throw new Error(userError);
+      throw userError;
     } else {
       body.post["updated_by"] = user.displayName;
       post["updated_at"] = new Date().getTime();
     }
     
     const update_post_api = () => db.collection(`${dept}-posts`).doc(postId).set(post, { merge: true });
-    const [_, error] = await handlePromise(update_post_api);
+    const [_, error] = await _commonUtils.handlePromise(update_post_api);
 
     if (error) {
-      throw new Error(error);
+      throw error;
     } else {
       return true;
     }
@@ -102,6 +100,7 @@ const postingsService: Service = {
   //   }
   // },
 
+  //TODO: Test this function
   deletePost: async (body: DeletePostRequest) => {
     const {postId, dept, archive} = body;
     
@@ -130,14 +129,8 @@ const postingsService: Service = {
     if (misc) {
       let obj = {}
       
-      const get_archive_doc_api = () => db
-      .collection(dept)
-      .doc('rota')
-      .collection('archive')
-      .doc(archive)
-      .get()
-
-      const [get_archive, get_error] = await handlePromise(get_archive_doc_api);
+      const get_archive_doc_api = () => db.collection(dept).doc('rota').collection('archive').doc(archive).get()
+      const [get_archive, get_error] = await _commonUtils.handlePromise(get_archive_doc_api);
 
       if (get_error) {
         throw new Error(`Error getting Archive doc: ${archive}`)
@@ -164,18 +157,14 @@ const postingsService: Service = {
           }
         })
         // Save Update
-        await db
-        .collection(dept)
-        .doc('rota')
-        .collection('archive')
-        .doc(archive)
-        .set(obj)
-        .then(() => {
-          console.log(`${archive} Updated!`)
-        })
-        .catch((error) => {
-          console.log(error)
-        })
+        await db.collection(dept).doc('rota').collection('archive').doc(archive).set(obj)
+          .then(() => {
+            console.log(`${archive} Updated!`)
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+
         return {message: "Operation Complete, archive updated"}
       } else {
         return {message: "No Archive Document Found"}
