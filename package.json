@@ -4,6 +4,7 @@
   "description": "OTM API Parent Project",
   "scripts": {
     "dev": "npm --prefix ./functions run dev",
+    "test": "npm --prefix ./functions run test",
     "build": "npm --prefix ./functions run build",
     "serve": "npm --prefix ./functions run serve",
     "add-controller": "node ./functions/scripts/add-controller.js",
