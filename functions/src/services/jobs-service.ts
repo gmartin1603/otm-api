@@ -1,16 +1,8 @@
 import { handlePromise } from "./common-service";
 import { db } from "../helpers/firebase";
-import { CreateJobRequest, DeleteJobRequest, GetJobRequest, GetJobsRequest, Job, UpdateJobRequest } from "../Types/jobRequests";
-import { Service } from "../Types/Service";
+import { CreateJobRequest, DeleteJobRequest, GetJobRequest, GetJobsRequest, Job, UpdateJobRequest } from "../Types/types.jobService";
+import { Service } from "../Types/type.Service";
 
-// declare type Job = {
-//   id: string;
-//   label: string;
-//   group: string;
-//   dept: string;
-//   order: number;
-//   [key: string]: any; // Allow additional properties
-// };
 
 const jobsService: Service = {
   name: "jobsService",

@@ -1,4 +1,4 @@
-import { Service } from "../Types/Service";
+import { Service } from "../Types/type.Service";
 
 const { handlePromise, handleResponse } = require("./common-service");
 // Firestore helpers (if needed)

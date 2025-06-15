@@ -1,4 +1,4 @@
-import { Service } from "../Types/Service";
+import { Service } from "../Types/type.Service";
 
 const { handlePromise, handleResponse } = require("./common-service");
 // Firestore helpers (if needed)
@@ -7,7 +7,7 @@ const { db, admin } = require("../helpers/firebase");
 
 const userService: Service = {
   name: "userService",
-  
+
   getUser: async (req) => {
     const body = req.body;
     console.log("Req body: ", body);

@@ -24,6 +24,24 @@
 			"aaron-bond.better-comments"
 		]
 	},
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "My Task",
+        "command": "echo hello",
+        "type": "shell",
+        "args": [],
+        "problemMatcher": [
+          "$tsc"
+        ],
+        "presentation": {
+          "reveal": "always"
+        },
+        "group": "build"
+      }
+    ]
+  },
 	"launch": {
 		"version": "0.2.0",
 		"configurations": [
@@ -37,5 +55,17 @@
 		"compounds": [
 			
 		]
-	}
+	},
+  "mcp": {
+    "inputs": [],
+    "servers": {
+      "mcp-server-time": {
+        "command": "uvx",
+        "args": [
+          "mcp_server_time",
+          "--local-timezone=America/Los_Angeles"
+        ]
+      }
+    }
+  }
 }

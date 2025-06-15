@@ -1,8 +1,11 @@
 import Success from '../models/response/success';
-import ErrorRes from '../models/response/error';
 import { db } from '../helpers/firebase';
+import { Service } from '../Types/type.Service';
+import ErrorRes from '../Types/class.ErrorRes';
 
-export const commonService = {
+export const commonService: Service = {
+  name: "commonService",
+
   handlePromise: async (promise) => {
     try {
       const result = await promise();
@@ -10,17 +13,6 @@ export const commonService = {
     } catch (error) {
       // console.error("Error in handlePromise: \n", error);
       return [null, error];
-    }
-  },
-
-  validateModel: (model) => {
-    // console.log("Validating model: \n", model);
-    const [pass, error] = model.validate();
-    // console.log("Validation error: \n", error);
-    if (error) {
-      return [false, error];
-    } else {
-      return [true, null];
     }
   },
 
@@ -33,29 +25,18 @@ export const commonService = {
   },
 
   handleSuccess: (res, object) => {
-    const successResponse = new Success(object);
-    const [pass, error] = commonService.validateModel(successResponse);
-    if (!pass) {
-      return commonService.handleError(res, 400, {error: {...error}, method: "handleSuccess"});
-    } else {
-      return res.status(200).json(object);
-    }
+    return res.status(200).json(object);
   },
 
   handleError: async (res, status, error) => {
     // console.error("Error response: ", error);
     const errorResponse = new ErrorRes(error);
-    const [pass, err] = commonService.validateModel(errorResponse);
-
-    if (!pass) {
-      return res.status(500).json({ status: "failed", error: err });
-    } else {
-      const responseObj = errorResponse.responseObj();
-      // console.log("errorResponse: ", responseObj);
-      await commonService.writeLog("error", responseObj); // writeLog is not a function
-      let res_status = Number(status) ? status : 400;
-      return res.status(res_status).json(responseObj);
-    }
+    
+    const responseObj = errorResponse.responseObj();
+    // console.log("errorResponse: ", responseObj);
+    await commonService.writeLog("error", responseObj); // writeLog is not a function
+    let res_status = Number(status) ? status : 400;
+    return res.status(res_status).json(responseObj);
   },
 
   sendPasswordResetEmail: async (email, link) => {

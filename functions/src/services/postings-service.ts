@@ -1,5 +1,5 @@
-import { DeletePostRequest, GetPostRequest, GetPostsRequest, UpdatePostRequest } from "../Types/postingRequests";
-import { Service } from "../Types/Service";
+import { DeletePostRequest, GetPostRequest, GetPostsRequest, UpdatePostRequest } from "../Types/types.postingsService";
+import { Service } from "../Types/type.Service";
 
 const { handlePromise } = require("./common-service");
 // Firestore helpers (if needed)
