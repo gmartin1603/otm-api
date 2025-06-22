@@ -15,7 +15,10 @@
 		"workbench.iconTheme": "vscode-icons",
 		"window.zoomLevel": 0.5,
 		"editor.fontSize": 14,
-		"cSpell.words": ["depts"]
+    "cSpell.words": [
+      "depts"
+    ],
+    "postman.settings.dotenv-detection-notification-visibility": false
 	},
 	"extensions": {
 		"recommendations": [

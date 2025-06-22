@@ -18,10 +18,10 @@ dotenv.config();
 const _commonUtils = new CommonUtils();
 
 let env: string;
-let corsOrigin = "*";
+// let corsOrigin = "*";
 if (process.env.NODE_ENV == "prod") {
   env = "prod";
-  corsOrigin = process.env.NODE_ENV_CORS_URL || "*";
+  // corsOrigin = process.env.NODE_ENV_CORS_URL || "*";
 } else {
   env = "dev";
 }

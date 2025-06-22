@@ -44,13 +44,13 @@ export default class CommonUtils {
       throw error;
     } else {
       let logs = [];
-      if (doc.exists) {
+      if (doc.exists && doc.data().logs) {
         logs = doc.data().logs;
       }
       obj["timestamp"] = new Date();
       logs.push(obj);
       // console.log("Writing to log: ", obj);
-      const write_log_api = () => db.collection("logs").doc(type).set({logs: logs}, { merge: true });
+      const write_log_api = () => db.collection("logs").doc(type).set({[obj.timestamp]: obj}, { merge: true });
       const [_, err] = await this.handlePromise(write_log_api);
       if (err) {
         console.error("Error writing to log:", err);
