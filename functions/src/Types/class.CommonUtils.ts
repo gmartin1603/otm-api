@@ -3,7 +3,7 @@ import ErrorRes from './class.ErrorRes';
 
 export default class CommonUtils {
 
-  async handlePromise(promise: () => Promise<any>): Promise<[any, Error | null]> {
+  async handlePromise<T>(promise: () => Promise<T>): Promise<[T | null, Error | null]> {
     try {
       const result = await promise();
       return [result, null];
@@ -36,29 +36,17 @@ export default class CommonUtils {
     return res.status(res_status).json(responseObj);
   }
 
-  async writeLog(type, obj) {
-    const get_logs_api = () => db.collection("logs").doc(type).get();
-    const [doc, error] = await this.handlePromise(get_logs_api);
-    if (error) {
-      console.error("Error fetching logs:", error);
-      throw error;
+  async writeLog(type: string, obj) {
+    obj["timestamp"] = new Date();
+    // console.log("Writing to log: ", obj);
+    const write_log_api = () => db.collection("logs").doc(type).set({[obj.timestamp.toDateString()]: obj}, { merge: true });
+    const [_, err] = await this.handlePromise(write_log_api);
+    if (err) {
+      console.error("Error writing to log:", err);
+      throw err;
     } else {
-      let logs = [];
-      if (doc.exists && doc.data().logs) {
-        logs = doc.data().logs;
-      }
-      obj["timestamp"] = new Date();
-      logs.push(obj);
-      // console.log("Writing to log: ", obj);
-      const write_log_api = () => db.collection("logs").doc(type).set({[obj.timestamp]: obj}, { merge: true });
-      const [_, err] = await this.handlePromise(write_log_api);
-      if (err) {
-        console.error("Error writing to log:", err);
-        throw err;
-      } else {
-        // console.log("Successfully wrote to log");
-        return true;
-      }
+      // console.log("Successfully wrote to log");
+      return true;
     }
   }
 

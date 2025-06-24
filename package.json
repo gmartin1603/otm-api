@@ -7,9 +7,10 @@
     "test": "npm --prefix ./functions run test",
     "build": "npm --prefix ./functions run build",
     "serve": "npm --prefix ./functions run serve",
-    "add-controller": "node ./functions/scripts/add-controller.js",
+    "deploy": "firebase deploy --only functions",
     "use-stage": "firebase use staging",
-    "use-prod": "firebase use production"
+    "use-prod": "firebase use production",
+    "add-controller": "echo node ./functions/scripts/add-controller.js"
   },
   "private": true
 }

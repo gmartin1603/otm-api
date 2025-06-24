@@ -10,7 +10,7 @@
     "dev": "tsc --watch",
     "test": "mocha --require ts-node/register test/**/*.test.ts",
     "predeploy": "npm run build",
-    "deploy": "firebase deploy --only functions",
+    "deploy": "npm --prefix ../ run deploy",
     "use-stage": "firebase use staging",
     "use-prod": "firebase use production",
     "shell": "firebase functions:shell",

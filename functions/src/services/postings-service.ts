@@ -1,12 +1,11 @@
 import { DeletePostRequest, GetPostRequest, GetPostsRequest, UpdatePostRequest } from "../Types/types.postingsService";
 import { Service } from "../Types/type.Service";
 import CommonUtils from "../Types/class.CommonUtils";
+import { db } from "../helpers/firebase";
+import admin from "firebase-admin";
+import jobsService from "./jobs-service";
 
-const _commonUtils = new CommonUtils();
-// Firestore helpers (if needed)
-// const { getAuth } = require("firebase-admin/auth");
-const { db, admin } = require("../helpers/firebase");
-const jobsService = require("./jobs-service");
+const {handlePromise} = new CommonUtils();
 
 const postingsService: Service = {
   name: "postingsService",
@@ -17,7 +16,7 @@ const postingsService: Service = {
     }
     
     const get_post_api = () => db.collection(`${dept}-posts`).doc(id).get();
-    const [data, error] = await _commonUtils.handlePromise(get_post_api);
+    const [data, error] = await handlePromise(get_post_api);
 
     if (error)
       throw error;
@@ -32,7 +31,7 @@ const postingsService: Service = {
     const dept = body.dept;
   
     const get_posts_api = () => db.collection(`${dept}-posts`).get();
-    const [result, error] = await _commonUtils.handlePromise(get_posts_api);
+    const [result, error] = await handlePromise(get_posts_api);
   
     if (error)
       throw error;
@@ -56,7 +55,7 @@ const postingsService: Service = {
     
     // Get user display name from user ID
     const get_user_api = () => admin.auth().getUser(userId);
-    const [user, userError] = await _commonUtils.handlePromise(get_user_api);
+    const [user, userError] = await handlePromise(get_user_api);
 
     if (userError) {
       throw userError;
@@ -66,7 +65,7 @@ const postingsService: Service = {
     }
     
     const update_post_api = () => db.collection(`${dept}-posts`).doc(postId).set(post, { merge: true });
-    const [_, error] = await _commonUtils.handlePromise(update_post_api);
+    const [_, error] = await handlePromise(update_post_api);
 
     if (error) {
       throw error;
@@ -130,7 +129,7 @@ const postingsService: Service = {
       let obj = {}
       
       const get_archive_doc_api = () => db.collection(dept).doc('rota').collection('archive').doc(archive).get()
-      const [get_archive, get_error] = await _commonUtils.handlePromise(get_archive_doc_api);
+      const [get_archive, get_error] = await handlePromise(get_archive_doc_api);
 
       if (get_error) {
         throw new Error(`Error getting Archive doc: ${archive}`)

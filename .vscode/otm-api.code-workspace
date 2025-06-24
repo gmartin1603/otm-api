@@ -18,6 +18,10 @@
     "cSpell.words": [
       "depts"
     ],
+    "debug.focusWindowOnBreak": true,
+    "debug.focusEditorOnBreak": true,
+    "debug.openDebug": "openOnSessionStart",
+    "debug.inlineValues": "auto",
     "postman.settings.dotenv-detection-notification-visibility": false
 	},
 	"extensions": {
@@ -60,15 +64,6 @@
 		]
 	},
   "mcp": {
-    "inputs": [],
-    "servers": {
-      "mcp-server-time": {
-        "command": "uvx",
-        "args": [
-          "mcp_server_time",
-          "--local-timezone=America/Los_Angeles"
-        ]
-      }
-    }
+    
   }
 }
