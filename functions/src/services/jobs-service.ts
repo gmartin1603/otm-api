@@ -1,92 +1,54 @@
-/**
- * @module jobs-service
- * @requires firebase-admin/auth
- * @description This module provides the service for the "/jobs/*" routes 
- * @description jobs-service handles the business logic for /jobs endpoints
- * @description jobs-service is called by and returns to jobs-controller
- * @exports jobsService
- */
-import { handlePromise } from "./common-service";
-// Firestore helpers (if needed)
-// const { getAuth } = require("firebase-admin/auth");
+import CommonUtils from "../Types/class.CommonUtils";
 import { db } from "../helpers/firebase";
-import { Request } from "express";
+import { CreateJobRequest, DeleteJobRequest, GetJobRequest, GetJobsRequest, Job, UpdateJobRequest } from "../Types/types.jobService";
+import { Service } from "../Types/type.Service";
 
-declare type Job = {
-  id: string;
-  label: string;
-  group: string;
-  dept: string;
-  order: number;
-  [key: string]: any; // Allow additional properties
-};
+// const _commonUtils = new CommonUtils();
+const {handlePromise, writeLog} = new CommonUtils();
 
-const jobsService = {
+const jobsService: Service = {
   name: "jobsService",
-  getName: () => jobsService.name,
 
-  getJobs: async (body) => {
-    const { depts } = body;
+  getJobs: async ({ depts }: GetJobsRequest) => {
     console.log(depts);
-    let jobs: Job[] = [];
+    let res: Job[] = [];
 
-    // Get all jobs for each department
     for (const dept of depts) {
-      const [result, error] = await handlePromise(() => db.collection(dept).where("id", "!=", "rota").orderBy("id").get());
+      const jobs_call = () => db.collection(`${dept}-jobs`).orderBy("order").get();
+      const [result, error] = await handlePromise(jobs_call);
+      
       if (error) {
         throw error;
       } else {
         result.forEach((doc: any) => {
-          jobs.push(doc.data());
+          res.push(doc.data());
         });
       }
-    }
-
-    // Order jobs by order with groups by dept
-    let res = [];
-    let map: { [key: string]: Job[] } = {};
-    jobs.forEach(job => {
-      if (!map[job.dept]) {
-        map[job.dept] = [];
-      }
-      map[job.dept].push(job);
-    });
-
-    for (const dept in map) {
-      map[dept].sort((a, b) => a.order - b.order);
-      res.push(...map[dept]);
     }
 
     return res;
   },
 
-  getJob: async (req: Request) => {
-    const { dept, id } = req.body;
-
-    const get_job_api = () => db.collection(dept).doc(id).get();
+  getJob: async ({ dept, id }: GetJobRequest): Promise<Job> => {
+    const get_job_api = () => db.collection(`${dept}-jobs`).doc(id).get();
     const [result, error] = await handlePromise(get_job_api);
 
-    if (error) {
-      // console.error("Error getting job:", error);
+    if (error)
       throw error;
-    } else {
-      // console.log("Successfully got job:", result.data());
-      return result.data();
-    }
+
+    if (!result.exists)
+      throw new Error(`Job with ID ${id} not found in department ${dept}`);
+
+    return result.data() as Job;
   },
 
-  addJob: async (req) => {
-    const { dept, job } = req.body;
-
-    // console.log(job)
+  addJob: async ({ dept, job }: CreateJobRequest) => {
     let name = job.label.toLowerCase().replace(/\s/g, "-");
     // Generate unique ID
-    let id = `${job.group}-${name}-${Math.random()
-        .toString(36)
-        .substring(2, 9)}`;
-    let ids = [];
+    let id = `${job.group}-${name}-${Math.random().toString(36).substring(2, 9)}`;
+    const ids = [];
 
-    const get_ids_api = () => db.collection(dept).get()
+    const get_ids_api = () => db.collection(`${dept}-jobs`).get()
     const [result, ids_error] = await handlePromise(get_ids_api);
     if (ids_error) {
       // console.error("Error getting job IDs:", ids_error);
@@ -100,40 +62,36 @@ const jobsService = {
     if (ids.includes(id)) {
       let i = 0;
       do {
-          console.warn("Generating new ID attempt: " + i);
-          id = `${job.group}-${name}-${Math.random()
-              .toString(36)
-              .substring(2, 9)}`;
-          i++;
+        id = `${job.group}-${name}-${Math.random().toString(36).substring(2, 9)}`;
+        i++;
       } while (ids.includes(id) || i < 100);
 
-      if (i >= 100) {
-          console.error("Failed to generate new ID");
-          throw new Error("Job not created: Failed to generate new ID");
-      } else {
-        console.log("New ID generated: " + id);
-      }
+      if (i >= 100)
+        throw new Error("Job not created: Failed to generate new ID");
+      
+      writeLog("activity", {
+        message: `Job ID conflict resolved, new ID: ${id}`,
+        job: job,
+      });
     }
 
     job.id = id;
     job.order = ids.length + 1;
 
-    const add_job_api = () => db.collection(dept).doc(job.id).set(job);
-    const [jobDoc, error] = await handlePromise(add_job_api);
+    const add_job_api = () => db.collection(`${dept}-jobs`).doc(job.id).set(job);
+    const [res, error] = await handlePromise(add_job_api);
     if (error) {
       // console.error("Error adding job:", error);
       throw error;
     } else {
       // console.log("Successfully added job:", job);
-      return { id: id, ...jobDoc };
+      return { id: id, ...res };
     }
   },
 
   //TODO: Test this function
-  updateJob: async (req) => {
-    const { dept, job } = req.body;
-
-    const update_job_api = () => db.collection(dept).doc(job.id).set(job, { merge: true });
+  updateJob: async ({ dept, job }: UpdateJobRequest) => {
+    const update_job_api = () => db.collection(`${dept}-jobs`).doc(job.id).set(job, { merge: true });
     const [result, error] = await handlePromise(update_job_api);
 
     if (error) {
@@ -146,10 +104,11 @@ const jobsService = {
   },
 
   //TODO: Test this function
-  deleteJob: async (req) => {
-    const { dept, id } = req.body;
-
-    const delete_job_api = () => db.collection(dept).doc(id).delete();
+  deleteJob: async ({ dept, id }: DeleteJobRequest) => {
+    throw new Error("Not implemented yet");
+    
+    //TODO!: Check for dependencies before deleting
+    const delete_job_api = () => db.collection(`${dept}-jobs`).doc(id).delete();
     const [result, error] = await handlePromise(delete_job_api);
 
     if (error) {

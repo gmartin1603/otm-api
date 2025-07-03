@@ -15,7 +15,14 @@
 		"workbench.iconTheme": "vscode-icons",
 		"window.zoomLevel": 0.5,
 		"editor.fontSize": 14,
-		"cSpell.words": ["depts"]
+    "cSpell.words": [
+      "depts"
+    ],
+    "debug.focusWindowOnBreak": true,
+    "debug.focusEditorOnBreak": true,
+    "debug.openDebug": "openOnSessionStart",
+    "debug.inlineValues": "auto",
+    "postman.settings.dotenv-detection-notification-visibility": false
 	},
 	"extensions": {
 		"recommendations": [
@@ -24,6 +31,24 @@
 			"aaron-bond.better-comments"
 		]
 	},
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "My Task",
+        "command": "echo hello",
+        "type": "shell",
+        "args": [],
+        "problemMatcher": [
+          "$tsc"
+        ],
+        "presentation": {
+          "reveal": "always"
+        },
+        "group": "build"
+      }
+    ]
+  },
 	"launch": {
 		"version": "0.2.0",
 		"configurations": [
@@ -37,5 +62,8 @@
 		"compounds": [
 			
 		]
-	}
+	},
+  "mcp": {
+    
+  }
 }
