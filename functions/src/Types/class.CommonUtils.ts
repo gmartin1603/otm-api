@@ -13,7 +13,7 @@ export default class CommonUtils {
     }
   }
 
-  handleResponse(res, status, object) {
+  handleResponse(res, status, object): Promise<any> {
     if (status === "success") {
       return this.respondWithSuccess(res, object);
     } else {

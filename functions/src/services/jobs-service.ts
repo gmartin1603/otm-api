@@ -91,7 +91,6 @@ const jobsService: Service = {
 
   //TODO: Test this function
   updateJob: async ({ dept, job }: UpdateJobRequest) => {
-
     const update_job_api = () => db.collection(`${dept}-jobs`).doc(job.id).set(job, { merge: true });
     const [result, error] = await handlePromise(update_job_api);
 
@@ -106,9 +105,9 @@ const jobsService: Service = {
 
   //TODO: Test this function
   deleteJob: async ({ dept, id }: DeleteJobRequest) => {
-
+    throw new Error("Not implemented yet");
+    
     //TODO!: Check for dependencies before deleting
-
     const delete_job_api = () => db.collection(`${dept}-jobs`).doc(id).delete();
     const [result, error] = await handlePromise(delete_job_api);
 
