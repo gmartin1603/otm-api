@@ -6,7 +6,7 @@ import postingsService from "./services/postings-service";
 import jobsService from "./services/jobs-service";
 import userService from "./services/user-service";
 import devAppService from "./services/devApp-service";
-import appService from "./services/app-service";
+import mainService from "./services/main-service";
 
 
 const dotenv = require("dotenv");
@@ -23,13 +23,13 @@ if (process.env.NODE_ENV == "prod") {
 
 console.log("CURRENT ENV: ", env);
 
+const mainApp = express();
+mainApp.post("*", (req: Request, res: Response) => RequestHandler(req, res, mainService));
+export const main = onRequest({ cors: true }, mainApp);
+
 const postingsApp = express();
 postingsApp.post("*", (req: Request, res: Response) => RequestHandler(req, res, postingsService));
 export const postings = onRequest({ cors: true }, postingsApp);
-
-const mainApp = express();
-mainApp.post("*", (req: Request, res: Response) => RequestHandler(req, res, appService));
-export const main = onRequest({ cors: true }, mainApp);
 
 const jobsApp = express();
 jobsApp.post("*", (req: Request, res: Response) => RequestHandler(req, res, jobsService));

@@ -38,8 +38,9 @@ export default class CommonUtils {
 
   async writeLog(type: string, obj) {
     obj["timestamp"] = new Date();
-    // console.log("Writing to log: ", obj);
-    const write_log_api = () => db.collection("logs").doc(type).set({[obj.timestamp.toDateString()]: obj}, { merge: true });
+    const logKey = `${obj.timestamp.toLocaleDateString()}-${obj.timestamp.toLocaleTimeString()}`;
+    
+    const write_log_api = () => db.collection("logs").doc(type).set({[logKey]: obj}, { merge: true });
     const [_, err] = await this.handlePromise(write_log_api);
     if (err) {
       console.error("Error writing to log:", err);

@@ -5,7 +5,7 @@ import { db } from "../helpers/firebase";
 import admin from "firebase-admin";
 import jobsService from "./jobs-service";
 
-const {handlePromise} = new CommonUtils();
+const { handlePromise } = new CommonUtils();
 
 const postingsService: Service = {
   name: "postingsService",

@@ -1,16 +1,14 @@
 import { Service } from "../Types/type.Service";
 import CommonUtils from "../Types/class.CommonUtils";
+import { db } from "../helpers/firebase";
 
 
 const _commonUtils = new CommonUtils();
 require("dotenv").config();
-// const { handlePromise, handleResponse, writeLog } = require("./common-service");
-// const { getAuth } = require("firebase-admin/auth");
-// const { db, admin } = require("../helpers/firebase");
 const API_VERSION = require("../helpers/constants").API_VERSION;
 
-const appService: Service = {
-  name: "appService",
+const mainService: Service = {
+  name: "mainService",
 
   getVersion: async () => {
     return Promise.resolve({ version: API_VERSION });
@@ -31,7 +29,26 @@ const appService: Service = {
       return true;
     }
   },
-  
+
+  getRota: async ({dept}) => {
+    if (!dept) {
+      throw new Error("Department must be provided");
+    }
+    const get_rota_api = () => db.collection(dept).doc("rota").get();
+    const [data, error] = await _commonUtils.handlePromise(get_rota_api);
+    if (error) {
+      throw error;
+    }
+    if (!data.exists) {
+      throw new Error(`Rota for department ${dept} does not exist`);
+    }
+    return data.data();
+  },
+
+  editRota: async ({dept, changes}) => {
+    throw new Error("This function is not implemented yet.");
+  },
+
 };
 
-export default appService;
+export default mainService;
